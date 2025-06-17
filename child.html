@@ -1,0 +1,36 @@
+<!-- child.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>子ページ</title>
+</head>
+<body>
+  <h2>ウォレット情報</h2>
+  <p id="address">アドレス: 未受信</p>
+  <p id="balance">残高: 未受信</p>
+
+  <button onclick="requestMint()">Mintをリクエスト</button>
+
+  <script>
+    // 親からのpostMessageを受け取る
+    window.addEventListener("message", (event) => {
+      if (event.origin !== "https://take-c.wal.app") return;
+
+      const msg = event.data;
+      if (msg.type === "wallet_info") {
+        document.getElementById("address").textContent = "アドレス: " + msg.address;
+        document.getElementById("balance").textContent = "残高: " + parseInt(msg.balance, 16) / 1e18 + " ETH";
+      }
+    });
+
+    // Mint要求を親へ送る
+    function requestMint() {
+      window.parent.postMessage({
+        type: "mint_request",
+        tokenId: 123 // サンプル
+      }, "https://take-c.wal.app");
+    }
+  </script>
+</body>
+</html>
